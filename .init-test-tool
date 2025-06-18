@@ -1,0 +1,4 @@
+{
+    "command": "npm run test",
+    "working_directory": "/home/kavia/workspace/code-generation/goalsaver-60260-9d7cd147/goal_saver_frontend"
+}
