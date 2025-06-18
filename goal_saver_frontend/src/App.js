@@ -1,12 +1,12 @@
 import React from "react";
 import "./App.css";
-import GoalSaverMain from "./GoalSaverMain";
+import GoalieMain from "./GoalieMain";
 
 /**
- * App root: renders GoalSaver main dashboard container.
+ * App root: renders Goalie main dashboard container.
  */
 function App() {
-  return <GoalSaverMain />;
+  return <GoalieMain />;
 }
 
 export default App;

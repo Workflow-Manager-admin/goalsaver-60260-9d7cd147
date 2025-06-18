@@ -1,98 +1,39 @@
-# Lightweight React Template for KAVIA
+# Goalie – Modern Savings Dashboard
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+Goalie (formerly "GoalSaver") is a modern React dashboard to help you track your savings goals and build better saving habits.
 
 ## Features
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
-
-## Important Note: Babel Configuration
-
-This project’s `package.json` includes a `babel` section with a plugin:
-
-```json
-"babel": {
-"plugins": ["./.ve/babel-plugin-jsx-editor-id.js"]
-}
-```
-
-This plugin enables **visual editing functionality** in supported tools.
-
-**Warning for AI code agents and contributors:**
-**DO NOT** remove or modify this section - it is ESSENTIAL for proper operation.
-Removing it will break editor integration and visual editing features.
-
-## Getting Started
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-### `npm test`
-
-Launches the test runner in interactive watch mode.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Beautiful Dashboard**: Modern layout, visually elevated goal tracking
+- **Multiple Goals**: Set, edit, and delete as many financial goals as you wish
+- **Progress Tracker**: See visual progress, targets, and milestones at a glance
+- **Smart Planner**: Suggests contributions based on your income/spending
+- **Auto Reminders**: Set up friendly reminders to build your saving habit
+- **Fast & Lightweight**: No heavy frameworks, pure React + CSS
 
 ## Customization
 
-### Colors
+Goalie defines custom color palette and dashboard component styles directly in the code (`GoalieMain.js` and `App.css`).
 
-The main brand colors are defined as CSS variables in `src/App.css`:
+## Getting Started
 
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
+From `goal_saver_frontend/` directory, run:
+
+```
+npm install
+npm start
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+Test with:
+
+```
+npm test
 ```
 
-### Components
+## Note
 
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
+- The app runs entirely in the browser – all data is local (no backend needed).
+- UI and brand can be further customized by editing inline styles or `App.css`.
+- Do not remove/alter the Babel plugin section in `package.json`; it is required for visual editing support.
 
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
-
-## Learn More
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

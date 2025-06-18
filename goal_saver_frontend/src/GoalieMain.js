@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
 
 // =======================
-// Custom Color Variables
+// Custom Color Variables (modern light dashboard styling)
 // =======================
 const COLORS = {
-  primary: "#4CAF50",
-  secondary: "#FFC107",
-  accent: "#2196F3",
-  background: "#F7FAFC",
-  card: "#FFFFFF",
-  border: "#E0E0E0",
-  text: "#28313a",
-  textSecondary: "#626262",
-  progressBg: "#e5e5ec",
-  reminderDot: "#B39DDB",
+  primary: "#32b875",
+  secondary: "#ffd861",
+  accent: "#6a5cff",
+  bgGradient: "linear-gradient(135deg, #eefdea 0%, #ffffff 100%)",
+  background: "#f6f8fa",
+  card: "#ffffff",
+  border: "#ecf0f7",
+  text: "#21303b",
+  textSecondary: "#657786",
+  progressBg: "#eceeff",
+  reminderDot: "#6a5cff",
+  navbarBg: "#ffffffcc",
+  shadow: "0 8px 32px 0 rgba(60,76,100,0.08)",
 };
 
 // =======================
@@ -54,10 +57,9 @@ function calculateProgress(goal, now = new Date()) {
 function suggestContribution(goal, income, expenses) {
   /**
    * Suggest smart contribution for a goal given user's income/expenses.
-   * Simple version: save X% of discretionary budget to this goal.
+   * Save up to 20% of discretionary budget for this goal.
    */
   const discretionary = income - expenses;
-  // Recommend 20% of discretionary per period if possible
   if (!goal || !goal.targetAmount) return 0;
   const { needToSavePerPeriod } = calculateProgress(goal);
   const suggested = Math.min(needToSavePerPeriod, Math.max(0, Math.round(discretionary * 0.2)));
@@ -72,9 +74,7 @@ function suggestContribution(goal, income, expenses) {
  * Simulated API: get all goals for user.
  */
 function api_listGoals() {
-  // In real app, GET /goals
-  // Here: just use localStorage for demo
-  let data = window.localStorage.getItem("goalsaver-goals");
+  let data = window.localStorage.getItem("goalie-goals");
   if (!data) return [];
   try {
     return JSON.parse(data);
@@ -86,13 +86,13 @@ function api_listGoals() {
  * Simulated API: save all goals.
  */
 function api_saveGoals(goals) {
-  window.localStorage.setItem("goalsaver-goals", JSON.stringify(goals));
+  window.localStorage.setItem("goalie-goals", JSON.stringify(goals));
 }
 /**
  * Simulated API: manage preferences.
  */
 function api_getUserPrefs() {
-  let data = window.localStorage.getItem("goalsaver-prefs");
+  let data = window.localStorage.getItem("goalie-prefs");
   if (!data) return {};
   try {
     return JSON.parse(data);
@@ -101,14 +101,14 @@ function api_getUserPrefs() {
   }
 }
 function api_saveUserPrefs(prefs) {
-  window.localStorage.setItem("goalsaver-prefs", JSON.stringify(prefs));
+  window.localStorage.setItem("goalie-prefs", JSON.stringify(prefs));
 }
 
 /**
  * Simulated API: set reminders (just stores in local storage).
  */
 function api_getReminders() {
-  let data = window.localStorage.getItem("goalsaver-reminders");
+  let data = window.localStorage.getItem("goalie-reminders");
   if (!data) return [];
   try {
     return JSON.parse(data);
@@ -117,7 +117,7 @@ function api_getReminders() {
   }
 }
 function api_saveReminders(reminders) {
-  window.localStorage.setItem("goalsaver-reminders", JSON.stringify(reminders));
+  window.localStorage.setItem("goalie-reminders", JSON.stringify(reminders));
 }
 
 // =====================================================
@@ -125,9 +125,9 @@ function api_saveReminders(reminders) {
 // =====================================================
 
 // PUBLIC_INTERFACE
-export default function GoalSaverMain() {
+export default function GoalieMain() {
   /**
-   * Main container for the GoalSaver dashboard app.
+   * Main container for the Goalie dashboard app.
    * Houses all features: goals planner, calculator, reminders, progress tracking.
    */
   const [goals, setGoals] = useState([]);
@@ -137,14 +137,12 @@ export default function GoalSaverMain() {
   const [editGoalObj, setEditGoalObj] = useState(null);
   const [reminders, setReminders] = useState([]);
 
-  // Load goals and prefs on mount
   useEffect(() => {
     setGoals(api_listGoals());
     setPrefs(api_getUserPrefs());
     setReminders(api_getReminders());
   }, []);
 
-  // Save prefs on change
   useEffect(() => {
     api_saveUserPrefs(prefs);
   }, [prefs]);
@@ -198,7 +196,6 @@ export default function GoalSaverMain() {
     api_saveGoals(newGoals);
   }
   function handleSetReminders(goalId, schedule) {
-    // Store reminders per-goal
     const newReminders = reminders.filter((r) => r.goalId !== goalId);
     newReminders.push({ goalId, schedule });
     setReminders(newReminders);
@@ -214,11 +211,13 @@ export default function GoalSaverMain() {
   // ----- RENDER -----
   return (
     <div style={styles.wrapper}>
-      <header style={{ ...styles.navbar, borderBottom: `2px solid ${COLORS.secondary}` }}>
+      <header style={styles.navbar}>
         <div style={styles.logo}>
-          <span style={{ ...styles.logoIcon, color: COLORS.primary }}>💰</span>GoalSaver
+          <span style={styles.logoIcon}>🥅</span>
+          <span style={styles.logoText}>Goalie</span>
         </div>
-        <div>
+        <div style={{display: "flex", alignItems: "center", gap: 18}}>
+          <span style={{ color: COLORS.accent, fontWeight: 500, fontSize: 15, letterSpacing: "1.2px" }}>Smarter Savings Dashboard</span>
           <button style={styles.addGoalBtn} onClick={() => { setShowGoalForm(true); setEditGoalObj(null); }}>+ New Goal</button>
         </div>
       </header>
@@ -238,6 +237,7 @@ export default function GoalSaverMain() {
               prefs={prefs}
               onPrefsChange={handlePrefsChange}
               selectedGoal={selectedGoal}
+              accent={COLORS.accent}
             />
           </section>
 
@@ -266,11 +266,14 @@ export default function GoalSaverMain() {
 
             {!showGoalForm && !selectedGoal && (
               <div style={styles.placeholderDetail}>
-                <h2 style={{ color: COLORS.primary, marginBottom: 12 }}>Welcome to GoalSaver!</h2>
-                <p style={{ color: COLORS.textSecondary }}>
-                  Select a goal to view details and track your progress.<br/>
-                  Or click <span style={{ fontWeight: 500 }}>+ New Goal</span> to get started.
+                <h2 style={{ color: COLORS.primary, marginBottom: 12, fontWeight: 700, fontSize: 32 }}>Welcome to Goalie!</h2>
+                <p style={{ color: COLORS.textSecondary, fontSize: 18, marginTop: 0 }}>
+                  Manage your savings goals with a smart, easy dashboard.<br />
+                  Select a goal or click <span style={{ fontWeight: 700 }}>+ New Goal</span> to get started.
                 </p>
+                <div style={{marginTop: 32, color: COLORS.accent, fontWeight: 500, fontSize: 20}}>
+                  <span role="img" aria-label="goal">⚡️</span> Build savings habits. Achieve more goals!
+                </div>
               </div>
             )}
           </section>
@@ -281,7 +284,7 @@ export default function GoalSaverMain() {
 }
 
 // =====================================================
-// COMPONENTS
+// COMPONENTS (modernized dashboard style)
 // =====================================================
 
 /**
@@ -291,10 +294,10 @@ export default function GoalSaverMain() {
 function GoalList({ goals, selectedGoalId, onSelect, onDelete, onEdit, accentColor }) {
   return (
     <div>
-      <h3 style={{margin: "0 0 12px 0"}}>Your Goals</h3>
+      <h3 style={{margin: "0 0 18px 0", letterSpacing: "1px", fontWeight: 600, fontSize: 20, color: COLORS.primary}}>Your Goals</h3>
       <div>
         {goals.length === 0 && (
-          <div style={{color: "#aaa", marginTop: 12, fontSize: "1rem"}}>No goals yet.</div>
+          <div style={{color: "#aaa", marginTop: 16, fontSize: "1.08rem", fontWeight: 400, letterSpacing: "0.5px"}}>No goals yet. Start your first!</div>
         )}
         {goals.map((goal) => (
           <div
@@ -303,17 +306,32 @@ function GoalList({ goals, selectedGoalId, onSelect, onDelete, onEdit, accentCol
             style={{
               ...styles.goalCard,
               borderColor: goal.id === selectedGoalId ? accentColor : COLORS.border,
-              background: goal.id === selectedGoalId ? "#f0f6ff" : COLORS.card,
+              boxShadow: goal.id === selectedGoalId ? "0 8px 18px #6a5cff14" : COLORS.shadow,
+              background: goal.id === selectedGoalId ? "#f8f7ff" : COLORS.card,
+              position: "relative"
             }}
           >
-            <div style={{fontWeight: 600, color: COLORS.text, fontSize: "1.1em"}}>{goal.name}</div>
+            {goal.id === selectedGoalId && (
+              <div style={{
+                position: "absolute",
+                top: -9,
+                right: 14,
+                width: 14,
+                height: 14,
+                background: accentColor,
+                borderRadius: "50%",
+                border: "2px solid #fff",
+                boxShadow: "0 2px 8px #6a5cff4a"
+              }} />
+            )}
+            <span style={{fontWeight: 700, color: COLORS.text, fontSize: "1.13em"}}>{goal.name}</span>
             <div style={{ fontSize: 13, color: COLORS.textSecondary }}>
               {formatCurrency(goal.savedAmount)} / {formatCurrency(goal.targetAmount)}
             </div>
-            <div style={{marginTop: 4, fontSize: 12, color: "#888"}}>
+            <div style={{marginTop: 4, fontSize: 12, color: "#90a0c0"}}>
               By {goal.targetDate}
             </div>
-            <div style={{ display: "flex", marginTop: 8, gap: "8px" }}>
+            <div style={{ display: "flex", marginTop: 10, gap: "10px" }}>
               <button style={styles.cardBtn} onClick={e => {e.stopPropagation(); onEdit(goal);}}>Edit</button>
               <button style={styles.cardBtnDelete} onClick={e => {e.stopPropagation(); onDelete(goal.id);}}>Delete</button>
             </div>
@@ -360,7 +378,7 @@ function GoalForm({ onSubmit, onCancel, initial, secondaryColor, accentColor }) 
   }
   return (
     <div style={styles.formCard}>
-      <h2 style={{margin: 0, color: accentColor}}>{initial ? "Edit Goal" : "Add New Goal"}</h2>
+      <h2 style={{margin: 0, color: accentColor, fontSize: 23, letterSpacing: "0.6px", fontWeight: 700}}>{initial ? "Edit Goal" : "Add New Goal"}</h2>
       <form onSubmit={handleSubmit}>
         <div style={styles.formGroup}>
           <label style={styles.formLabel}>Goal Name*</label>
@@ -409,7 +427,7 @@ function GoalForm({ onSubmit, onCancel, initial, secondaryColor, accentColor }) 
           />
         </div>
         {error && <div style={{ color: "crimson", marginBottom: 8 }}>{error}</div>}
-        <div style={{display: "flex", gap: 14, marginTop: 8}}>
+        <div style={{display: "flex", gap: 16, marginTop: 11}}>
           <button type="submit" style={{...styles.primaryBtn, background: accentColor}}>
             {initial ? "Save Changes" : "Add Goal"}
           </button>
@@ -421,11 +439,10 @@ function GoalForm({ onSubmit, onCancel, initial, secondaryColor, accentColor }) 
 }
 
 /**
- * SmartContributionCalculator - Form for setting income/expenses and shows suggestion.
+ * SmartContributionCalculator - Form for setting income/expenses and suggestion.
  */
 // PUBLIC_INTERFACE
-function SmartContributionCalculator({ prefs, onPrefsChange, selectedGoal }) {
-  // Format suggestion preview
+function SmartContributionCalculator({ prefs, onPrefsChange, selectedGoal, accent }) {
   let suggestionMsg = "";
   if (selectedGoal && prefs.income && prefs.expenses) {
     const amount = suggestContribution(selectedGoal, prefs.income, prefs.expenses);
@@ -436,16 +453,16 @@ function SmartContributionCalculator({ prefs, onPrefsChange, selectedGoal }) {
         : "No room to save this period.");
   }
   return (
-    <div style={{...styles.sideCard, borderColor: COLORS.primary}}>
-      <h4 style={{margin: 0, color: COLORS.primary}}>Smart Contribution Calculator</h4>
-      <div style={{margin: "4px 0 8px 0", fontSize: 13, color: COLORS.textSecondary}}>
+    <div style={{...styles.sideCard, borderColor: accent}}>
+      <h4 style={{margin: 0, color: accent, fontWeight: 700, fontSize: 18, letterSpacing: "1px"}}>Smart Planner</h4>
+      <div style={{margin: "6px 0 13px", fontSize: 14, color: COLORS.textSecondary}}>
         Adjust goals based on monthly income and spending.
       </div>
       <div style={{display: "flex", gap: 8, alignItems: "center"}}>
         <input
           type="number"
           placeholder="Monthly Income (₹)"
-          style={{...styles.formInput, maxWidth: 110, background: "#fafdff"}}
+          style={{...styles.formInput, maxWidth: 110, background: "#fafbff"}}
           value={prefs.income}
           onChange={(e) => onPrefsChange({ income: e.target.value })}
           min={0}
@@ -453,14 +470,14 @@ function SmartContributionCalculator({ prefs, onPrefsChange, selectedGoal }) {
         <input
           type="number"
           placeholder="Monthly Expenses (₹)"
-          style={{...styles.formInput, maxWidth: 110, background: "#fafdff"}}
+          style={{...styles.formInput, maxWidth: 110, background: "#fafbff"}}
           value={prefs.expenses}
           onChange={(e) => onPrefsChange({ expenses: e.target.value })}
           min={0}
         />
       </div>
       {suggestionMsg && (
-        <div style={{marginTop: 7, color: COLORS.accent, fontWeight: 500, fontSize: 14}}>
+        <div style={{marginTop: 7, color: accent, fontWeight: 500, fontSize: 14}}>
           {suggestionMsg}
         </div>
       )}
@@ -493,16 +510,16 @@ function GoalDetail({ goal, onSaveAmount, onSetReminders, reminder, prefs, smart
     <div style={styles.detailCard}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
-          <h2 style={{margin: 0, color: colors.primary, fontSize: "2rem"}}>{goal.name}</h2>
-          <div style={{fontWeight: 400, color: colors.textSecondary, margin: "3px 0 8px"}}>
+          <h2 style={{margin: 0, color: colors.primary, fontSize: "2.2rem", fontWeight: 700}}>{goal.name}</h2>
+          <div style={{fontWeight: 400, color: colors.textSecondary, margin: "3px 0 8px", fontSize: 15}}>
             {goal.description}
           </div>
         </div>
-        <div style={{ fontSize: 13, color: "#666" }}>
+        <div style={{ fontSize: 13, color: "#8b92ad", background: "#f0f3fd", borderRadius: 8, padding: "2px 13px" }}>
           <span role="img" aria-label="calendar">📅</span> Target: {goal.targetDate}
         </div>
       </div>
-      <div style={{margin: "18px 0 8px"}}>
+      <div style={{margin: "22px 0 12px"}}>
         <ProgressBar percent={prog.percent} colors={colors} />
       </div>
       <div style={{display: "flex", gap: "32px", marginBottom: 16, fontSize: 16}}>
@@ -510,9 +527,9 @@ function GoalDetail({ goal, onSaveAmount, onSetReminders, reminder, prefs, smart
         <div>Milestone: <b>{prog.percent}%</b></div>
         <div>Left: <b>{formatCurrency(goal.targetAmount - goal.savedAmount)}</b></div>
       </div>
-      <form style={{marginBottom: 10}} onSubmit={handleSave}>
+      <form style={{marginBottom: 10, marginTop: 2}} onSubmit={handleSave}>
         <label style={styles.formLabel}>Add To Savings</label>
-        <div style={{display: "flex", alignItems: "center", gap: 8, marginTop: 4}}>
+        <div style={{display: "flex", alignItems: "center", gap: 9, marginTop: 3}}>
           <input
             type="number"
             style={{...styles.formInput, maxWidth: 120}}
@@ -537,15 +554,15 @@ function GoalDetail({ goal, onSaveAmount, onSetReminders, reminder, prefs, smart
         <div>
           {prog.periodsLeft > 0 && (
             <span>
-              You need to save <b>{formatCurrency(prog.needToSavePerPeriod)}</b> per {prog.periodsLeft > 30 ? "month" : "day"} to reach goal on time.
+              You need to save <b>{formatCurrency(prog.needToSavePerPeriod)}</b> per {prog.periodsLeft > 30 ? "month" : "day"} to reach your goal on time.
             </span>
           )}
         </div>
       </div>
       <div style={{marginTop: 18}}>
-        <button style={{...styles.secondaryBtn, background: "#f9f9fc", color: colors.primary, border: `1px solid ${colors.primary}`}}
+        <button style={{...styles.secondaryBtn, background: "#f9f9fc", color: colors.accent, border: `1.2px solid ${colors.accent}`}}
           onClick={() => setShowReminder(!showReminder)}>
-          {showReminder ? "Hide Reminders" : "Auto Reminders & Habit Builder"}
+          {showReminder ? "Hide Reminders" : "⚡️ Auto Reminders & Habit Builder"}
         </button>
       </div>
       {showReminder && (
@@ -562,17 +579,19 @@ function GoalDetail({ goal, onSaveAmount, onSetReminders, reminder, prefs, smart
 
 // PUBLIC_INTERFACE
 function ProgressBar({ percent, colors }) {
-  // Simple colored bar
+  // Stylish colored bar
   return (
     <div style={{
-      height: 16,
+      height: 17,
       background: COLORS.progressBg,
-      borderRadius: 8,
-      overflow: "hidden"
+      borderRadius: 9,
+      overflow: "hidden",
+      border: `1.2px solid ${COLORS.border}`,
+      boxShadow: "0 1px 5px #c4c8df2a"
     }}>
       <div style={{
         width: percent + "%",
-        background: `linear-gradient(90deg, ${colors.primary}, ${colors.accent})`,
+        background: `linear-gradient(90deg, ${colors.primary} 0%, ${colors.accent} 70%)`,
         height: "100%",
         borderRadius: 8,
         transition: "width 0.5s cubic-bezier(0.56,0,0.21,1)"
@@ -595,8 +614,8 @@ function ReminderSetter({ goal, reminder, onSetReminders, accentColor }) {
     onSetReminders(goal.id, { frequency: freq, time: when, message: msg });
   }
   return (
-    <form style={{marginTop: 18, background: "#fafbfc", padding: 12, borderRadius: 8, border: `1px solid ${accentColor}`}} onSubmit={handleSave}>
-      <div style={{fontWeight: 600, color: accentColor, marginBottom: 6}}>Set a Habit Reminder</div>
+    <form style={{marginTop: 18, background: "#fafbfc", padding: 14, borderRadius: 9, border: `1.5px solid ${accentColor}`, boxShadow: "0 1px 10px #b6bcf024"}} onSubmit={handleSave}>
+      <div style={{fontWeight: 700, color: accentColor, marginBottom: 7, fontSize: 16, letterSpacing: "0.4px"}}>Set a Habit Reminder</div>
       <div style={{display: "flex", gap: 16, alignItems: "center"}}>
         <span>Remind me to save</span>
         <select style={styles.formInput} value={freq} onChange={e => setFreq(e.target.value)}>
@@ -619,208 +638,226 @@ function ReminderSetter({ goal, reminder, onSetReminders, accentColor }) {
         Save Reminder
       </button>
       {reminder && (
-        <div style={{marginTop: 8, fontSize: 13, color: "#5a97fc"}}>
+        <div style={{marginTop: 8, fontSize: 13, color: accentColor, fontWeight: 500}}>
           ✔️ Active: {reminder.schedule.frequency} at {reminder.schedule.time}
           {reminder.schedule.message ? " - " + reminder.schedule.message : ""}
         </div>
       )}
       <div style={{marginTop: 8, fontSize: 12, color: "#aaa"}}>
-        <i>Reminders appear as notifications when you check this app. (No backend integration yet.)</i>
+        <i>Reminders show as notifications when you visit Goalie.<br/> (No backend integration yet.)</i>
       </div>
     </form>
   );
 }
 
 // =====================================================
-// Inline Styles (would typically go in a CSS module)
+// Inline Styles (modernized with dashboard theme)
 // =====================================================
 const styles = {
   wrapper: {
     minHeight: "100vh",
-    background: COLORS.background,
+    background: COLORS.bgGradient,
     color: COLORS.text,
     fontFamily: "Inter, Arial, sans-serif",
   },
   navbar: {
-    background: COLORS.card,
-    height: 56,
-    padding: "0 2vw",
+    background: COLORS.navbarBg,
+    height: 62,
+    boxShadow: COLORS.shadow,
+    padding: "0 3vw",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     position: "fixed",
     top: 0,
     width: "100%",
-    zIndex: 40,
+    zIndex: 42,
+    borderBottom: `1.5px solid ${COLORS.border}`,
+    transition: "box-shadow .26s"
   },
   logo: {
     fontWeight: 700,
-    fontSize: "1.3rem",
-    letterSpacing: "0.5px",
+    fontSize: "1.5rem",
+    letterSpacing: "0.7px",
     display: "flex",
     alignItems: "center",
+    gap: 9,
     color: COLORS.primary,
-    gap: 6,
+    userSelect: "none"
   },
   logoIcon: {
-    fontSize: 25,
-    fontWeight: 900,
+    fontSize: 32,
+    marginTop: 1,
     marginRight: 2,
+    userSelect: "none"
+  },
+  logoText: {
+    fontWeight: 700,
+    letterSpacing: "1.6px",
+    color: COLORS.primary
   },
   addGoalBtn: {
-    background: COLORS.primary,
+    background: COLORS.accent,
     color: "#fff",
     border: "none",
-    borderRadius: 6,
-    padding: "8px 16px",
-    fontWeight: 500,
-    fontSize: 15,
+    borderRadius: 7,
+    padding: "9px 20px",
+    fontWeight: 600,
+    fontSize: 17,
     cursor: "pointer",
-    boxShadow: "0 1px 4px #d9e6da40",
-    transition: "background 0.2s"
+    boxShadow: "0 1px 10px #babfff60",
+    transition: "background 0.2s, box-shadow 0.15s"
   },
   main: {
-    marginTop: 68,
-    minHeight: "calc(100vh - 68px)",
-    background: COLORS.background,
-    padding: "0 0 48px 0",
+    marginTop: 74,
+    minHeight: "calc(100vh - 74px)",
+    background: "none",
+    padding: "0 0 58px 0",
   },
   dashboard: {
     display: "flex",
-    gap: 44,
+    gap: 49,
     alignItems: "flex-start",
-    maxWidth: 1200,
+    maxWidth: 1280,
     margin: "0 auto",
-    padding: "32px 12px 0 12px",
+    padding: "40px 16px 0 16px",
     boxSizing: "border-box",
   },
   sideColumn: {
-    flex: "1 1 310px",
-    minWidth: 270,
-    marginRight: 6,
+    flex: "1 1 320px",
+    minWidth: 254,
+    marginRight: 10,
     display: "flex",
     flexDirection: "column",
-    gap: 20,
+    gap: 25,
   },
   detailColumn: {
     flex: "4 1 1",
-    minWidth: 380,
-    maxWidth: 650,
+    minWidth: 385,
+    maxWidth: 662,
     alignSelf: "stretch",
-    padding: "4px 0 0 0",
+    padding: "6px 0 0 0",
   },
   goalCard: {
-    border: `2px solid ${COLORS.border}`,
-    borderRadius: 9,
-    padding: "14px 16px",
-    marginBottom: 14,
+    border: `2.5px solid ${COLORS.border}`,
+    borderRadius: 11,
+    padding: "16px 18px 15px",
+    marginBottom: 16,
     cursor: "pointer",
     background: COLORS.card,
-    transition: "border .18s, background .2s",
-    boxShadow: "0 1px 2px #f1f2f3",
+    transition: "border .2s, box-shadow .22s, background .23s",
+    boxShadow: COLORS.shadow,
     boxSizing: "border-box"
   },
   cardBtn: {
     background: COLORS.accent,
     color: "#fff",
     border: "none",
-    borderRadius: 4,
-    fontSize: 12,
-    padding: "4px 11px",
-    cursor: "pointer"
+    borderRadius: 5,
+    fontSize: 13,
+    padding: "5px 13px",
+    fontWeight: 500,
+    cursor: "pointer",
+    transition: "background 0.17s"
   },
   cardBtnDelete: {
-    background: "#f44336",
+    background: "#fc5656",
     color: "#fff",
     border: "none",
-    borderRadius: 4,
-    fontSize: 12,
-    padding: "4px 11px",
+    borderRadius: 5,
+    fontSize: 13,
+    padding: "5px 13px",
+    fontWeight: 500,
     cursor: "pointer"
   },
   sideCard: {
     background: "#fff",
-    padding: "14px 15px 11px",
-    border: `1.5px solid ${COLORS.primary}`,
-    borderRadius: 10,
-    marginTop: 12,
+    padding: "18px 16px 15px",
+    border: `1.7px solid ${COLORS.accent}`,
+    borderRadius: 12,
+    marginTop: 13,
     fontSize: 15,
-    boxShadow: "0 2px 5px #d4dff315"
+    boxShadow: COLORS.shadow
   },
   detailCard: {
     background: "#fff",
-    borderRadius: 12,
-    boxShadow: "0 2px 12px #8be7c30f",
-    padding: "30px 32px 22px",
-    marginTop: 3,
-    marginBottom: 18,
-    minHeight: 280,
+    borderRadius: 15,
+    boxShadow: "0 2px 14px #6098ff0c, 0 10px 38px #c4ffe60c",
+    padding: "34px 36px 23px",
+    marginTop: 6,
+    marginBottom: 20,
+    minHeight: 302,
+    border: `1.2px solid ${COLORS.border}`,
   },
   placeholderDetail: {
-    marginTop: 50,
-    background: "#ffffffcb",
-    borderRadius: 16,
-    padding: "54px 28px",
-    minHeight: 200,
+    marginTop: 46,
+    background: "#fffffff9",
+    borderRadius: 18,
+    padding: "60px 32px 44px",
+    minHeight: 210,
     textAlign: "center",
-    boxShadow: "0 1px 12px #9bdaf027"
+    boxShadow: "0 2px 13px #b3d0ff21",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
   },
   formCard: {
-    padding: "26px 30px",
-    marginTop: 8,
+    padding: "34px 26px 24px",
+    marginTop: 13,
     background: "#ffffff",
-    borderRadius: 12,
-    boxShadow: "0 2px 8px #034c2140",
-    minWidth: 350,
-    maxWidth: 500,
+    borderRadius: 14,
+    boxShadow: "0 2px 11px #034c213a, 0 4px 44px #61edaf10",
+    minWidth: 340,
+    maxWidth: 520,
+    border: `1.2px solid ${COLORS.border}`,
   },
   formGroup: {
-    marginBottom: 15,
+    marginBottom: 17,
   },
   formLabel: {
     fontSize: 13,
-    color: COLORS.primary,
-    fontWeight: 600,
-    marginBottom: 3,
+    color: COLORS.accent,
+    fontWeight: 700,
+    marginBottom: 4,
     display: "block"
   },
   formInput: {
     width: "100%",
-    border: `1.2px solid ${COLORS.border}`,
-    borderRadius: 6,
-    padding: "8px 10px",
+    border: `1.4px solid ${COLORS.border}`,
+    borderRadius: 7,
+    padding: "10px 13px",
     fontSize: 15,
     marginTop: 3,
     color: COLORS.text,
-    background: "#f8fafc",
+    background: "#fbfcff",
     outline: "none"
   },
   primaryBtn: {
-    background: COLORS.primary,
+    background: COLORS.accent,
     color: "#fff",
     border: "none",
-    borderRadius: 6,
-    padding: "7px 22px",
+    borderRadius: 7,
+    padding: "7px 23px",
     fontWeight: 600,
-    fontSize: 15,
+    fontSize: 16,
     cursor: "pointer",
-    boxShadow: "0 1px 6px #c9ecc980",
+    boxShadow: "0 1px 7px #8be7c330",
     transition: "background 0.2s"
   },
   secondaryBtn: {
     background: COLORS.secondary,
-    color: "#fff",
+    color: "#4b4600",
     border: "none",
-    borderRadius: 6,
-    padding: "6px 18px",
-    fontWeight: 500,
-    fontSize: 15,
+    borderRadius: 7,
+    padding: "6px 20px",
+    fontWeight: 600,
+    fontSize: 16,
     cursor: "pointer",
     transition: "background 0.18s"
   },
   detailRow: {
-    margin: "9px 0 4px",
-    fontSize: 14,
+    margin: "13px 0 7px",
+    fontSize: 15,
     color: COLORS.textSecondary,
   },
 };
