@@ -1,38 +1,93 @@
 :root {
-  --base-light: #00ffff;
-  --base-dark: #00008b;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
+  --base-light: #32b875;
+  --base-dark: #191e2a;
+  --accent: #6a5cff;
+  --primary: #32b875;
+  --secondary: #ffd861;
+  --text-light: #222;
+  --text-dark: #ffffff;
+  --text-secondary-light: #657786;
+  --text-secondary-dark: #b1bad3;
+  --border-light: #e2e7f2;
+  --border-dark: #242940;
+  --card-light: #ffffff;
+  --card-dark: #22263a;
+  --progress-bg-light: #eceeff;
+  --progress-bg-dark: #2f3242;
+  --nav-bg-light: #ffffffcc;
+  --nav-bg-dark: #191e2acc;
+  --shadow-light: 0 8px 32px 0 rgba(60,76,100,0.08);
+  --shadow-dark: 0 6px 30px 0 rgba(8,10,30,0.18);
+}
+
+/* DARK THEME toggle using a body[data-theme=dark] selector */
+body[data-theme="dark"] {
+  background-color: var(--base-dark);
+  color: var(--text-dark);
+}
+body[data-theme="dark"] .app {
+  background: var(--base-dark);
+  color: var(--text-dark);
+}
+body[data-theme="dark"] .navbar {
+  background-color: var(--nav-bg-dark);
+  border-bottom: 1px solid var(--border-dark);
+}
+body[data-theme="dark"] .container,
+body[data-theme="dark"] .hero {
+  background: none !important;
+}
+body[data-theme="dark"] .goal-card,
+body[data-theme="dark"] .detailCard {
+  background: var(--card-dark) !important;
+  color: var(--text-dark);
+  box-shadow: var(--shadow-dark);
+}
+body[data-theme="dark"] input,
+body[data-theme="dark"] textarea,
+body[data-theme="dark"] select {
+  background: #23294a !important;
+  color: #e7f8fd !important;
+  border: 1.2px solid var(--border-dark) !important;
+}
+body[data-theme="dark"] .sideCard,
+body[data-theme="dark"] .formCard {
+  background: var(--card-dark);
+  color: var(--text-dark);
+  box-shadow: var(--shadow-dark);
 }
 
 body {
   margin: 0;
   font-family: 'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif;
   background-color: var(--base-dark);
-  color: var(--text-color);
+  color: var(--text-dark);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background 0.45s cubic-bezier(.9,-0.19,.15,1), color 0.4s;
 }
 
 .app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: var(--base-dark);
+  transition: background 0.35s;
 }
 
 .navbar {
-  background-color: var(--base-dark);
+  background-color: var(--nav-bg-light);
   padding: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-light);
   position: fixed;
   top: 0;
   width: 100%;
   box-sizing: border-box;
   z-index: 100;
+  transition: background 0.35s, border 0.33s, color 0.33s;
 }
 
 .logo {
@@ -41,6 +96,8 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  letter-spacing: 0.7px;
+  user-select: none;
 }
 
 .logo-symbol {
@@ -63,14 +120,15 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 24px;
+  background: none;
+  transition: background 0.4s;
 }
 
 .subtitle {
-  color: var(--base-light);
+  color: var(--primary);
   font-weight: 500;
   font-size: 1.1rem;
 }
-
 .title {
   font-size: 3.5rem;
   font-weight: 600;
@@ -81,13 +139,13 @@ body {
 .description {
   font-size: 1.1rem;
   line-height: 1.5;
-  color: var(--text-secondary);
+  color: var(--text-secondary-light);
   max-width: 600px;
   margin-bottom: 16px;
 }
 
 .btn {
-  background-color: var(--base-light);
+  background-color: var(--primary);
   color: white;
   border: none;
   border-radius: 4px;
@@ -95,14 +153,88 @@ body {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s, box-shadow 0.19s;
 }
 
 .btn:hover {
   background-color: #7691ff;
+  box-shadow: 0 2px 11px #82cdff35;
 }
-
 .btn-large {
   padding: 12px 24px;
   font-size: 1.1rem;
 }
+
+.goal-card, .sideCard, .formCard, .detailCard {
+  transition: box-shadow 0.25s cubic-bezier(.8,.25,.25,1.0), background 0.33s, color 0.33s;
+  will-change: box-shadow, background, color;
+}
+
+.goal-card:hover {
+  box-shadow: 0 8px 30px #b8d4fd33, 0 2px 16px #92b0ff16;
+  transform: translateY(-1.5px) scale(1.011);
+  z-index: 1;
+}
+
+/* Professional animated progress bar styles (animated width, subtle pulse) */
+.animated-progress-bar {
+  height: 18px;
+  background: var(--progress-bg-light);
+  border-radius: 9px;
+  overflow: hidden;
+  border: 1.2px solid var(--border-light);
+  box-shadow: 0 1px 6px #c4c8df1b;
+  transition: background 0.33s, border 0.3s;
+  position: relative;
+}
+
+.animated-progress-bar-inner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 85%);
+  border-radius: 8px;
+  transition: width 0.7s cubic-bezier(0.56,0,0.21,1), background 0.33s;
+  will-change: width;
+  animation: pulseGlow 1.7s infinite cubic-bezier(.84,0,.43,1.0);
+}
+
+@keyframes pulseGlow {
+  0%,100% { filter: brightness(1.04) drop-shadow(0 0 0 #dafae6); }
+  50%    { filter: brightness(1.14) drop-shadow(0 0 6px #dafae65c); }
+}
+
+/* Dashboard card and input optimizations */
+.detailCard, .formCard, .sideCard {
+  transition: box-shadow 0.33s cubic-bezier(.73,.07,.45,1.02), background 0.3s;
+}
+
+/* Control button for theme/profile */
+.controlBtn {
+  background: var(--progress-bg-light);
+  border: none;
+  color: var(--accent);
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 7px 16px;
+  box-shadow: 0 1px 5px #81d2fc12;
+  transition: background 0.19s, color 0.23s, box-shadow 0.23s;
+}
+.controlBtn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid var(--primary);
+}
+
+/* Subtle dashboard UI Animations */
+@media (hover: hover) {
+  .goal-card:hover, .sideCard:hover, .formCard:hover, .detailCard:hover {
+    box-shadow: 0 10px 36px #badfff2a, 0 4px 48px #aedeff14;
+  }
+}
+
+/* Hide browser autofill background */
+input:-webkit-autofill { -webkit-background-clip: text; -webkit-text-fill-color: var(--text-dark); }
